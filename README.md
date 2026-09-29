@@ -21,13 +21,15 @@ python3 -m unittest discover -s tests -v
   正常消息零误伤；频控在任意滑窗内都成立。
 - 规模：100 万条消息、10 万玩家 2 秒内处理完，内存 O(玩家数 × 窗口内消息数)；不许每条消息重扫禁词表。
 
-## 现在的行为
+## 实现
 
-- `normalize` 是恒等函数：`坏·词` 里的分隔符没被去掉，直接绕过。
-- `blocked` 用 `word in content`：`苹果派` 命中 `苹果`，属于误伤。
-- `allow` 只看 `stamp // WINDOW` 的当前桶：跨桶边界刷屏不会被拦。
+- `normalize`：NFKC 全角转半角 + casefold 大小写折叠 + 去掉分隔符与空白（`[\W_]+`）。
+- `blocked`：禁词表编译成一个正则（禁词内部允许插入分隔符，两侧要求词边界），
+  整词匹配，`苹果派` 不误伤；`matched_words` 返回命中的禁词供 `--explain` 打印。
+- `allow`：滑动窗口，`[now - WINDOW, now]` 内已有 `LIMIT` 条则拒绝；
+  `RateLimiter` 用每玩家一个双端队列实现，均摊 O(1)，内存 O(玩家数 × 窗口内消息数)。
 
-## 计划新增的能力
+## 命令行
 
 ```
 --messages sample

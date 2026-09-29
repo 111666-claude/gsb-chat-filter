@@ -1,5 +1,23 @@
 """聊天过滤与频控。"""
 
-from .filter import BANNED, LIMIT, WINDOW, allow, blocked, normalize
+from .filter import (
+    BANNED,
+    LIMIT,
+    WINDOW,
+    RateLimiter,
+    allow,
+    blocked,
+    matched_words,
+    normalize,
+)
 
-__all__ = ["BANNED", "LIMIT", "WINDOW", "allow", "blocked", "normalize"]
+__all__ = [
+    "BANNED",
+    "LIMIT",
+    "WINDOW",
+    "RateLimiter",
+    "allow",
+    "blocked",
+    "matched_words",
+    "normalize",
+]
