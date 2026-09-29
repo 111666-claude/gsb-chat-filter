@@ -1,5 +1,5 @@
 """聊天过滤与频控。"""
 
-from .filter import BANNED, LIMIT, WINDOW, allow, blocked, normalize
+from .filter import BANNED, LIMIT, WINDOW, ChatFilter, allow, blocked, match, normalize
 
-__all__ = ["BANNED", "LIMIT", "WINDOW", "allow", "blocked", "normalize"]
+__all__ = ["BANNED", "LIMIT", "WINDOW", "ChatFilter", "allow", "blocked", "match", "normalize"]

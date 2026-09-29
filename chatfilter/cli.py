@@ -2,13 +2,14 @@
 
 import argparse
 
-from .filter import LIMIT, WINDOW, allow, blocked, sample_messages, sample_times
+from .filter import LIMIT, WINDOW, allow, match, sample_messages, sample_times
 
 
 def build_parser():
     parser = argparse.ArgumentParser(prog="chat-filter", description="聊天过滤与频控")
     parser.add_argument("--messages", default="sample", help="sample")
     parser.add_argument("--flood", action="store_true", help="跑频控样例")
+    parser.add_argument("--explain", action="store_true", help="打印被拦消息命中的禁词")
     return parser
 
 
@@ -21,10 +22,18 @@ def main(argv=None):
             history = [stamp for stamp in times if stamp <= now]
             if allow(history, now):
                 passed += 1
+            elif args.explain:
+                print("dropped at=%d: over limit=%d window=%d" % (now, LIMIT, WINDOW))
         print("passed=%d limit=%d window=%d" % (passed, LIMIT, WINDOW))
         return 0
     messages = sample_messages()
-    banned = sum(1 for message in messages if blocked(message))
+    banned = 0
+    for message in messages:
+        word = match(message)
+        if word is not None:
+            banned += 1
+            if args.explain:
+                print("blocked %s: hit=%s" % (message, word))
     print("messages=%d blocked=%d" % (len(messages), banned))
     return 0
 
